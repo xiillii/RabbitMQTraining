@@ -2,6 +2,10 @@
 using MicroRabbit.Domain.Core.Bus;
 using MicroRabbit.Domain.Core.Commands;
 using MicroRabbit.Domain.Core.Events;
+using RabbitMQ.Client;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MicroRabbit.Infra.Bus;
 
@@ -25,7 +29,22 @@ public sealed class RabbitMQBus : IEventBus
 
     public void Publish<T>(T @event) where T : Event
     {
-        throw new NotImplementedException();
+        var factory = new ConnectionFactory() { HostName = "localhost" };
+
+        using var connection = factory.CreateConnection();
+
+        using (var channel = connection.CreateModel())
+        {
+            var eventName = @event.GetType().Name;
+
+            channel.QueueDeclare(eventName, false, false, false, null);
+
+            var message = JsonSerializer.Serialize(@event);
+
+            var body = Encoding.UTF8.GetBytes(message);
+
+            channel.BasicPublish("", eventName, null, body);
+        }
     }
 
     public void Subscribe<T, TH>()

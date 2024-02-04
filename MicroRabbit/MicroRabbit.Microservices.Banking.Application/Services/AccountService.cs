@@ -4,11 +4,11 @@ using MicroRabbit.Microservices.Banking.Domain.Models;
 
 namespace MicroRabbit.Microservices.Banking.Application.Services;
 
-public class AccuntService : IAccountService
+public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
 
-    public AccuntService(IAccountRepository accountRepository)
+    public AccountService(IAccountRepository accountRepository)
     {
         _accountRepository = accountRepository;
     }
